@@ -1,6 +1,6 @@
 # GTrans: Grouping and Fusing Transformer Layers for Neural Machine Translation
 
-![picture](https://yuweiyin.github.io/files/publications/2022-07-29-arXiv-GTrans-model.png)
+![picture](https://yuweiyin.github.io/files/publications/2022-07-29-IEEE-TASLP-GTrans-model.png)
 
 ## Abstract
 
