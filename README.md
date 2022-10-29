@@ -50,7 +50,7 @@ Multi-layer Representation Fusion, Multilingual Translation
 * [Fairseq](https://github.com/pytorch/fairseq): 1.0.0
 
 ```bash
-cd GTrans/fairseq
+cd GTrans
 pip install --editable ./
 ```
 
