@@ -78,10 +78,10 @@ python train.py ${TEXT} \
   --arch "transformer_wmt_en_de" \
   --criterion "label_smoothed_cross_entropy" \
   --optimizer "adam" --adam-betas '(0.9, 0.98)' \
-  --min-lr 1e-15 --lr 0.1 --lr-scheduler "my_inverse_sqrt" --warmup-updates 4000 \
+  --min-lr 1e-15 --lr 0.1 --lr-scheduler "inverse_sqrt" --warmup-updates 4000 \
   --max-update 100000 --max-epoch 100 --max-tokens 1024 --log-interval 100 --log-format "simple" \
-  --encoder-layers 60 --encoder-block-layers 6 --extract-encoder-hidden-states "block-last" \
-  --decoder-layers 36 --decoder-block-layers 6 \
+  --encoder-layers 60 --encoder-group-layers 6 \
+  --decoder-layers 36 --decoder-group-layers 6 \
   --keep-last-epochs 1 --keep-interval-updates 1 --keep-best-checkpoints 5 \
   --save-interval-updates 10000 --save-interval 1 --save-dir ${MODEL} \
   --label-smoothing 0.1 --dropout 0.3 --update-freq 16 --seed 1 \
@@ -126,7 +126,7 @@ python -m torch.distributed.launch \
   --enable-lang-ids --same-lang-per-batch \
   --enable-reservsed-directions-shared-datasets \
   --share-all-embeddings --max-source-positions 256 --max-target-positions 256 \
-  --optimizer "adam" --adam-betas '(0.9, 0.98)' --lr-scheduler inverse_sqrt --lr ${LR} \
+  --optimizer "adam" --adam-betas '(0.9, 0.98)' --lr-scheduler "inverse_sqrt" --lr ${LR} \
   --max-update 1000000 --max-epoch ${MAX_EPOCH} --max-tokens ${MAX_TOKENS} \
   --dropout 0.1 --attention-dropout 0.0 --weight-decay ${WEIGHT_DECAY} --update-freq ${UPDATE_FREQ} \
   --encoder-layers ${ENCODER_LAYERS} --decoder-layers ${DECODER_LAYERS} \
