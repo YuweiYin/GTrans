@@ -23,10 +23,14 @@ from fairseq.tasks import LegacyFairseqTask, register_task
 from fairseq.utils import FileContentsAction
 
 
+###
 def get_time_gap(s, e):
     return (
         datetime.datetime.fromtimestamp(e) - datetime.datetime.fromtimestamp(s)
     ).__str__()
+
+
+###
 
 
 logger = logging.getLogger(__name__)

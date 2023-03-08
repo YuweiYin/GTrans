@@ -2588,7 +2588,7 @@ def base_architecture(args):
     args.init_decoder_only = getattr(args, "init_decoder_only", False)
     args.max_positions = getattr(args, "max_positions", 512)
 
-    #
+    # Gformer
     args.encoder_group_layers = getattr(args, "encoder_group_layers", args.encoder_layers)
     args.decoder_group_layers = getattr(args, "decoder_group_layers", args.decoder_layers)
     args.encoder_group_type = getattr(args, "encoder_group_type", "sparse")

@@ -21,12 +21,12 @@ def reset_lang2adapter(model_path, model_name, new_model_name, lang2adapter):
         print("Successfully saving to {}/{}".format(model_path, new_model_name))
 
 
-reset_lang2adapter("/path/to/DeepMNMT/models/two-stage/opus/two-stage/adapter-step1-10W/", "checkpoint_last.pt",
+reset_lang2adapter("/path/to/adapter-step1-10W/", "checkpoint_last.pt",
                    "avg16_20.pt", torch.LongTensor(
         [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 1, 1, 0, 4, 3, 2, 2, 2, 0, 1, 1, 4, 4, 2,
          2, 4, 2, 3, 1, 2, 1, 4, 4, 2, 1, 2, 4, 1, 1, 0, 3, 1, 3, 2, 2, 1, 0, 3, 2, 4, 2, 0, 2, 1, 3, 2, 3, 4, 4, 2,
          0]))
-reset_lang2adapter("/path/to/DeepMNMT/models/two-stage/opus/two-stage/adapter-step1-50W/", "checkpoint_last.pt",
+reset_lang2adapter("/path/to/adapter-step1-50W/", "checkpoint_last.pt",
                    "avg16_20.pt", torch.LongTensor(
         [1, 0, 0, 0, 3, 0, 0, 2, 2, 1, 0, 0, 1, 1, 2, 2, 2, 4, 0, 3, 2, 2, 2, 0, 1, 4, 2, 0, 2, 0, 1, 2, 1, 2, 2, 1, 1,
          0, 2, 2, 2, 1, 0, 3, 0, 4, 0, 3, 2, 4, 0]))

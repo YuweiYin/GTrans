@@ -90,6 +90,7 @@ class LabelSmoothedCrossEntropyCriterion(FairseqCriterion):
     def get_lprobs_and_target(self, model, net_output, sample):
         lprobs = model.get_normalized_probs(net_output, log_probs=True)
         target = model.get_targets(sample, net_output)
+        #target = target.unsqueeze(0).expand(lprobs.size(0), lprobs.size(1), lprobs.size(2)).contiguous()
         if self.ignore_prefix_size > 0:
             if getattr(lprobs, "batch_first", False):
                 lprobs = lprobs[:, self.ignore_prefix_size :, :].contiguous()

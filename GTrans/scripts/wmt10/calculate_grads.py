@@ -8,7 +8,7 @@ LANGS = "fr cs de fi lv et ro hi tr gu".split()
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', '-path', type=str,
-                        default=r'/path/to/wmt10/x2x/XLMT/checkpoint8_pt/grads/', help='input stream')
+                        default=r'/path/to/checkpoint8_pt/grads/', help='input stream')
     args = parser.parse_args()
     return args
 

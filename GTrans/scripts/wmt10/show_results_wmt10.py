@@ -1,8 +1,9 @@
+import os
 import argparse
 import xlwt
-import xlrd
-import os
-from collections import OrderedDict
+
+# import xlrd
+# from collections import OrderedDict
 
 TOTAL_DIRECTION = 30
 
@@ -21,17 +22,15 @@ LOW_LANGS = "ro hi tr gu"
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--log', '-log', type=str,
-                        default=r'/path/to/wmt10/BLEU/',
-                        help='input stream')
+    parser.add_argument('--log', '-log', type=str, default=r'/path/to/BLEU/', help='input stream')
     parser.add_argument('--checkpoint-name', '-checkpoint-name', type=str,
-                        default=r'/path/to/checkpoint5.pt',
+                        default=r'/path/to/xlmr-data/model/checkpoint5.pt',
                         help='input stream')
     args = parser.parse_args()
     return args
 
 
-def create_excel(results, name, save_dir='/path/to/results/'):
+def create_excel(results, name, save_dir='/path/to/SharedTask/SmallTask1_ExcelResults/'):
     workbook = xlwt.Workbook(encoding='utf-8')
     worksheet = workbook.add_sheet(name, cell_overwrite_ok=True)
     worksheet.write(1, 0, label="DeltaLM-Postnorm (Large)")

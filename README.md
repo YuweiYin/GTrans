@@ -71,21 +71,24 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ```bash
 TEXT=/path/to/data/
-MODEL=/path/to/model
+MODEL_SAVE_DIR=${1}
+
+mkdir -p ${MODEL_SAVE_DIR}
 
 python train.py ${TEXT} \
   --source-lang "en" --target-lang "de" \
-  --arch "transformer_wmt_en_de" \
+  --arch "GTrans_base" --variant "transformer" \
   --criterion "label_smoothed_cross_entropy" \
   --optimizer "adam" --adam-betas '(0.9, 0.98)' \
-  --min-lr 1e-15 --lr 0.1 --lr-scheduler "inverse_sqrt" --warmup-updates 4000 \
-  --max-update 100000 --max-epoch 100 --max-tokens 1024 --log-interval 100 --log-format "simple" \
-  --encoder-layers 60 --encoder-group-layers 6 \
-  --decoder-layers 36 --decoder-group-layers 6 \
-  --keep-last-epochs 1 --keep-interval-updates 1 --keep-best-checkpoints 5 \
-  --save-interval-updates 10000 --save-interval 1 --save-dir ${MODEL} \
+  --lr 0.0005 --lr-scheduler "inverse_sqrt" \
+  --warmup-updates 4000 --max-update 100000 --max-epoch 100 \
+  --log-interval 100 --log-format "simple" \
+  --encoder-layers 60 --encoder-block-layers 6 \
+  --decoder-layers 36 --decoder-block-layers 6 \
+  --keep-last-epochs 1 --keep-interval-updates 1 --max-tokens 1024 --keep-best-checkpoints 5 \
+  --save-interval-updates 10000 --save-interval 1 --save-dir "${MODEL_SAVE_DIR}" \
   --label-smoothing 0.1 --dropout 0.3 --update-freq 16 --seed 1 \
-  --ddp-backend=no_c10d --share-all-embeddings --fp16
+  --ddp-backend=no_c10d  --share-all-embeddings --fp16
 ```
 
 ### OPUS-100
@@ -96,7 +99,7 @@ NODES=${1}
 MAX_TOKENS=${2}
 UPDATE_FREQ=${3}
 SEED=${4}
-MODEL=${5}
+MODEL_SAVE_DIR=${5}
 MAX_EPOCH=${6}
 LR=${7}
 WARMUP_STEPS=${8}
@@ -110,12 +113,12 @@ LANGS="af,am,ar,as,az,be,bg,bn,br,bs,ca,cs,cy,da,de,el,en,eo,es,et,eu,fa,fi,fr,f
 LANG_PAIRS="en-af,af-en,en-am,am-en,en-ar,ar-en,en-as,as-en,en-az,az-en,en-be,be-en,en-bg,bg-en,en-bn,bn-en,en-br,br-en,en-bs,bs-en,en-ca,ca-en,en-cs,cs-en,en-cy,cy-en,en-da,da-en,en-de,de-en,en-el,el-en,en-eo,eo-en,en-es,es-en,en-et,et-en,en-eu,eu-en,en-fa,fa-en,en-fi,fi-en,en-fr,fr-en,en-fy,fy-en,en-ga,ga-en,en-gd,gd-en,en-gl,gl-en,en-gu,gu-en,en-ha,ha-en,en-he,he-en,en-hi,hi-en,en-hr,hr-en,en-hu,hu-en,en-id,id-en,en-ig,ig-en,en-is,is-en,en-it,it-en,en-ja,ja-en,en-ka,ka-en,en-kk,kk-en,en-km,km-en,en-kn,kn-en,en-ko,ko-en,en-ku,ku-en,en-ky,ky-en,en-li,li-en,en-lt,lt-en,en-lv,lv-en,en-mg,mg-en,en-mk,mk-en,en-ml,ml-en,en-mr,mr-en,en-ms,ms-en,en-mt,mt-en,en-my,my-en,en-nb,nb-en,en-ne,ne-en,en-nl,nl-en,en-nn,nn-en,en-no,no-en,en-oc,oc-en,en-or,or-en,en-pa,pa-en,en-pl,pl-en,en-ps,ps-en,en-pt,pt-en,en-ro,ro-en,en-ru,ru-en,en-rw,rw-en,en-se,se-en,en-sh,sh-en,en-si,si-en,en-sk,sk-en,en-sl,sl-en,en-sq,sq-en,en-sr,sr-en,en-sv,sv-en,en-ta,ta-en,en-te,te-en,en-tg,tg-en,en-th,th-en,en-tk,tk-en,en-tr,tr-en,en-tt,tt-en,en-ug,ug-en,en-uk,uk-en,en-ur,ur-en,en-uz,uz-en,en-vi,vi-en,en-wa,wa-en,en-xh,xh-en,en-yi,yi-en,en-zh,zh-en,en-zu,zu-en"
 GPUS=8
 
-mkdir -p ${MODEL}
+mkdir -p ${MODEL_SAVE_DIR}
 
 python -m torch.distributed.launch \
   --nproc_per_node=${GPUS} --nnodes=${NODES} --node_rank=${OMPI_COMM_WORLD_RANK} \
   --master_addr=${MASTER_ADDR} --master_port=${MASTER_PORT} train.py ${TEXT} \
-  --save-dir ${MODEL} --arch "GTrans_base" --variant addffn \
+  --save-dir ${MODEL_SAVE_DIR} --arch "GTrans_base" --variant "addffn" \
   --task "translation_multi_simple_epoch" --langs ${LANGS} --lang-pairs ${LANG_PAIRS} \
   --criterion "label_smoothed_cross_entropy" --label-smoothing 0.1 \
   --pretrained-infoxlm-checkpoint ${PRETRAINED_ENCODER_MODEL} \
@@ -134,7 +137,7 @@ python -m torch.distributed.launch \
   --seed ${SEED} --log-format simple --tensorboard-logdir ${MODEL}/log/ \
   --truncate-source --ddp-backend=no_c10d \
   --skip-invalid-size-inputs-valid-test --fp16 --fp16-init-scale 4 \
-  2>&1 | tee -a ${MODEL}/train.log
+  2>&1 | tee -a ${MODEL_SAVE_DIR}/train.log
 ```
 
 

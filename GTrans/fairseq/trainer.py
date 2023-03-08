@@ -50,6 +50,7 @@ class Trainer(object):
         self.cfg = cfg
         self.task = task
 
+
         # catalog shared parameters
         shared_params = _catalog_shared_params(model)
         self.tpu = cfg.common.tpu
@@ -163,9 +164,9 @@ class Trainer(object):
     def criterion(self):
         if self._wrapped_criterion is None:
             if (
-                    utils.has_parameters(self._criterion)
-                    and self.data_parallel_world_size > 1
-                    and not self.cfg.optimization.use_bmuf
+                utils.has_parameters(self._criterion)
+                and self.data_parallel_world_size > 1
+                and not self.cfg.optimization.use_bmuf
             ):
                 self._wrapped_criterion = models.DistributedFairseqModel(
                     self.cfg.distributed_training,
@@ -216,8 +217,8 @@ class Trainer(object):
                     "please switch to FP32 which is likely to be faster"
                 )
             if (
-                    self.cfg.common.memory_efficient_fp16
-                    or self.cfg.common.memory_efficient_bf16
+                self.cfg.common.memory_efficient_fp16
+                or self.cfg.common.memory_efficient_bf16
             ):
                 self._optimizer = optim.MemoryEfficientFP16Optimizer.build_optimizer(
                     self.cfg, params
@@ -237,9 +238,9 @@ class Trainer(object):
 
         if self.cfg.distributed_training.zero_sharding == "os":
             if (
-                    self.cfg.common.fp16
-                    and not self.cfg.common.memory_efficient_fp16
-                    and not self.cfg.common.memory_efficient_bf16
+                self.cfg.common.fp16
+                and not self.cfg.common.memory_efficient_fp16
+                and not self.cfg.common.memory_efficient_bf16
             ) and not self.cfg.common.fp16_no_flatten_grads:
                 raise ValueError(
                     "ZeRO is incomptabile with fp16 and flattened grads. "
@@ -284,12 +285,12 @@ class Trainer(object):
             logger.info(f"Finished saving checkpoint to {filename}")
 
     def load_checkpoint(
-            self,
-            filename,
-            reset_optimizer=False,
-            reset_lr_scheduler=False,
-            optimizer_overrides=None,
-            reset_meters=False,
+        self,
+        filename,
+        reset_optimizer=False,
+        reset_lr_scheduler=False,
+        optimizer_overrides=None,
+        reset_meters=False,
     ):
         """
         Load all training state from a checkpoint file.
@@ -301,10 +302,10 @@ class Trainer(object):
         bexists = PathManager.isfile(filename)
         if bexists:
             load_on_all_ranks = (
-                    self.cfg.checkpoint.load_checkpoint_on_all_dp_ranks
-                    # TPUs don't support broadcast yet, so load checkpoints
-                    # on every worker for now
-                    or self.tpu
+                self.cfg.checkpoint.load_checkpoint_on_all_dp_ranks
+                # TPUs don't support broadcast yet, so load checkpoints
+                # on every worker for now
+                or self.tpu
             )
 
             if load_on_all_ranks or self.data_parallel_rank == 0:
@@ -315,10 +316,10 @@ class Trainer(object):
                 # state. Later we will broadcast sharded states to each rank
                 # to avoid memory from exploding.
                 if (
-                        not load_on_all_ranks
-                        and self.cfg.distributed_training.zero_sharding == "os"
-                        and "last_optimizer_state" in state
-                        and self.data_parallel_world_size > 1
+                    not load_on_all_ranks
+                    and self.cfg.distributed_training.zero_sharding == "os"
+                    and "last_optimizer_state" in state
+                    and self.data_parallel_world_size > 1
                 ):
                     state["last_optimizer_state"] = "SHARDED"
             else:
@@ -359,10 +360,10 @@ class Trainer(object):
             # only reload optimizer and lr_scheduler if they match
             last_optim = self._optim_history[-1]
             assert (
-                    last_optim["criterion_name"] == self.get_criterion().__class__.__name__
+                last_optim["criterion_name"] == self.get_criterion().__class__.__name__
             ), "Criterion does not match; please reset the optimizer (--reset-optimizer)."
             assert (
-                    last_optim["optimizer_name"] == self.optimizer.__class__.__name__
+                last_optim["optimizer_name"] == self.optimizer.__class__.__name__
             ), "Optimizer does not match; please reset the optimizer (--reset-optimizer)."
 
             if not reset_lr_scheduler:
@@ -403,13 +404,13 @@ class Trainer(object):
         return extra_state
 
     def get_train_iterator(
-            self,
-            epoch,
-            combine=True,
-            load_dataset=True,
-            data_selector=None,
-            shard_batch_itr=True,
-            disable_iterator_cache=False,
+        self,
+        epoch,
+        combine=True,
+        load_dataset=True,
+        data_selector=None,
+        shard_batch_itr=True,
+        disable_iterator_cache=False,
     ):
         """Return an EpochBatchIterator over the training set for a given epoch."""
         if load_dataset:
@@ -443,9 +444,9 @@ class Trainer(object):
         return batch_iterator
 
     def get_valid_iterator(
-            self,
-            subset,
-            disable_iterator_cache=False,
+        self,
+        subset,
+        disable_iterator_cache=False,
     ):
         """Return an EpochBatchIterator over given validation subset for a given epoch."""
         batch_iterator = self.task.get_batch_iterator(
@@ -505,7 +506,7 @@ class Trainer(object):
 
         metrics.log_start_time("train_wall", priority=800, round=0)
 
-        # grad_records = []
+        #grad_records = []
         # forward and backward pass
         logging_outputs, sample_size, ooms = [], 0, 0
         for i, sample in enumerate(samples):
@@ -518,9 +519,9 @@ class Trainer(object):
                 all-reduce in the last backwards pass.
                 """
                 if (
-                        self.data_parallel_world_size > 1
-                        and hasattr(self.model, "no_sync")
-                        and i < len(samples) - 1
+                    self.data_parallel_world_size > 1
+                    and hasattr(self.model, "no_sync")
+                    and i < len(samples) - 1
                 ):
                     return self.model.no_sync()
                 else:
@@ -536,7 +537,7 @@ class Trainer(object):
                         optimizer=self.optimizer,
                         update_num=self.get_num_updates(),
                         ignore_grad=is_dummy_batch,
-                        epoch=epoch
+                        epoch = epoch
                     )
                     del loss
 
@@ -600,7 +601,7 @@ class Trainer(object):
                 ignore=is_dummy_batch,
             )
             self._cumulative_training_time = (
-                    total_train_time / self.data_parallel_world_size
+                total_train_time / self.data_parallel_world_size
             )
 
         overflow = False
@@ -626,15 +627,15 @@ class Trainer(object):
                 # clip grads
                 grad_norm = self.clip_grad_norm(self.cfg.optimization.clip_norm)
 
-            if getattr(self.task.args, 'debug', False):
+            record_grads = False
+            if getattr(self.task.args, 'debug', False) and record_grads:
                 grads = []
-                # list(self.model.decoder.layers.parameters()) +
+                #list(self.model.decoder.layers.parameters()) +
                 for para in list(self.model.encoder.layers.parameters()):
                     if para.grad is not None:
                         grads.append(para.grad.view(-1) / sample['ntokens'])
                 grads = torch.cat(grads).detach().cpu().numpy()
-                grad_save_path = "{}/grads/{}.grad".format(self.task.args.restore_file.replace(".", "_"),
-                                                           self.task.args.lang_pairs[0])
+                grad_save_path = "{}/grads/{}.grad".format(self.task.args.restore_file.replace(".", "_"), self.task.args.lang_pairs[0])
                 if not os.path.exists(os.path.dirname(grad_save_path)):
                     os.makedirs(os.path.dirname(grad_save_path))
                 np.save(grad_save_path, grads)
@@ -647,8 +648,8 @@ class Trainer(object):
             # on tpu check tensor is slow
             if not self.tpu:
                 if (
-                        not self.cfg.optimization.use_bmuf
-                        and self.cfg.distributed_training.distributed_wrapper != "SlowMo"
+                    not self.cfg.optimization.use_bmuf
+                    and self.cfg.distributed_training.distributed_wrapper != "SlowMo"
                 ):
                     self._check_grad_norms(grad_norm)
                 if not torch.isfinite(grad_norm).all():
@@ -701,8 +702,8 @@ class Trainer(object):
 
         logging_output = None
         if (
-                not overflow
-                or self.cfg.distributed_training.distributed_wrapper == "SlowMo"
+            not overflow
+            or self.cfg.distributed_training.distributed_wrapper == "SlowMo"
         ):
             self.set_num_updates(self.get_num_updates() + 1)
 
@@ -755,13 +756,13 @@ class Trainer(object):
 
                 # clear CUDA cache to reduce memory fragmentation
                 if (
-                        self.cuda
-                        and self.cfg.common.empty_cache_freq > 0
-                        and (
+                    self.cuda
+                    and self.cfg.common.empty_cache_freq > 0
+                    and (
                         (self.get_num_updates() + self.cfg.common.empty_cache_freq - 1)
                         % self.cfg.common.empty_cache_freq
-                )
-                        == 0
+                    )
+                    == 0
                 ):
                     torch.cuda.empty_cache()
 
@@ -901,7 +902,7 @@ class Trainer(object):
         elif name in {"valid_loss", "valid_nll_loss"}:
             # support for legacy train.py, which assumed these meters
             # are always initialized
-            k = name[len("valid_"):]
+            k = name[len("valid_") :]
             m = metrics.get_meter("valid", k)
             return m or meters.AverageMeter()
         elif name == "oom":
@@ -945,7 +946,7 @@ class Trainer(object):
             )
         if sample is None or len(sample) == 0:
             assert (
-                    self._dummy_batch is not None and len(self._dummy_batch) > 0
+                self._dummy_batch is not None and len(self._dummy_batch) > 0
             ), "Invalid dummy batch: {}".format(self._dummy_batch)
             sample, _ = self._prepare_sample(self._dummy_batch, is_dummy=True)
             return sample, True
@@ -996,10 +997,10 @@ class Trainer(object):
             return False
         elif self.cfg.optimization.use_bmuf:
             return (
-                           self.get_num_updates() + 1
-                   ) % self.cfg.bmuf.global_sync_iter == 0 and (
-                           self.get_num_updates() + 1
-                   ) > self.cfg.bmuf.warmup_iterations
+                self.get_num_updates() + 1
+            ) % self.cfg.bmuf.global_sync_iter == 0 and (
+                self.get_num_updates() + 1
+            ) > self.cfg.bmuf.warmup_iterations
         else:
             return True
 
@@ -1012,10 +1013,10 @@ class Trainer(object):
         sys.stderr.flush()
 
     def _aggregate_logging_outputs(
-            self,
-            logging_outputs: List[Dict[str, Any]],
-            *extra_stats_to_sum,
-            ignore=False,
+        self,
+        logging_outputs: List[Dict[str, Any]],
+        *extra_stats_to_sum,
+        ignore=False,
     ):
         if self.task.__class__.logging_outputs_can_be_summed(self.get_criterion()):
             return self._fast_stat_sync_sum(
@@ -1027,10 +1028,10 @@ class Trainer(object):
             )
 
     def _all_gather_list_sync(
-            self,
-            logging_outputs: List[Dict[str, Any]],
-            *extra_stats_to_sum,
-            ignore=False,
+        self,
+        logging_outputs: List[Dict[str, Any]],
+        *extra_stats_to_sum,
+        ignore=False,
     ):
         """
         Sync logging outputs across workers. all_gather_list_sync is
@@ -1055,10 +1056,10 @@ class Trainer(object):
         return logging_outputs, extra_stats_to_sum
 
     def _fast_stat_sync_sum(
-            self,
-            logging_outputs: List[Dict[str, Any]],
-            *extra_stats_to_sum,
-            ignore=False,
+        self,
+        logging_outputs: List[Dict[str, Any]],
+        *extra_stats_to_sum,
+        ignore=False,
     ):
         """
         Sync logging outputs across workers. fast_stat_sync_sum is
@@ -1106,8 +1107,8 @@ class Trainer(object):
             def is_consistent(tensor):
                 max_abs_diff = torch.max(torch.abs(tensor - tensor[0]))
                 return (
-                        torch.isfinite(tensor).all()
-                        or (max_abs_diff / (tensor[0] + 1e-6) < 1e-6).all()
+                    torch.isfinite(tensor).all()
+                    or (max_abs_diff / (tensor[0] + 1e-6) < 1e-6).all()
                 )
 
             if not is_consistent(self._grad_norm_buf):
@@ -1131,7 +1132,7 @@ class Trainer(object):
 
     def _reduce_and_log_stats(self, logging_outputs, sample_size, grad_norm=None):
         if grad_norm is not None and (
-                not torch.is_tensor(grad_norm) or torch.isfinite(grad_norm)
+            not torch.is_tensor(grad_norm) or torch.isfinite(grad_norm)
         ):
             metrics.log_speed("ups", 1.0, priority=100, round=2)
             metrics.log_scalar("gnorm", grad_norm, priority=400, round=3)
@@ -1172,6 +1173,7 @@ class Trainer(object):
                     if key_to_delete in logging_output:
                         del logging_output[key_to_delete]
             return logging_output
+
 
     def _check_xla_compilation(self):
         import torch_xla.debug.metrics as met

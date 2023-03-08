@@ -16,6 +16,7 @@ from fairseq.models.transformer import (
     TransformerDecoder,
     TransformerEncoder,
     TransformerModel,
+    TransformerDecoderLayer,
     base_architecture as transformer_base_architecture,
 )
 from fairseq.models.transformer_from_pretrained_infoxlm import (
@@ -661,7 +662,7 @@ class GTransEncoder(TransformerEncoder):
         self.encoder_group_type = getattr(args, "encoder_group_type", "sprase")
         self.encoder_group_layers = args.encoder_group_layers
         self.encoder_group_number = args.encoder_layers // args.encoder_group_layers
-        self.langs = args.langs
+        self.langs = getattr(args, "langs", [])
         if hasattr(args, "high_langs") and hasattr(args, "low_langs"):
             self.high_langs = args.high_langs.split(',')
             self.low_langs = args.low_langs.split(',')
@@ -1086,7 +1087,7 @@ class GTransDecoder(TransformerDecoder):
         elif args.variant == 'cafirst_addffn':
             layer = XLMTCaFirstAddFFN(args, no_encoder_attn)
         else:
-            raise NotImplementedError
+            layer = TransformerDecoderLayer(args, no_encoder_attn)
         if getattr(args, "checkpoint_activations", False):
             layer = checkpoint_wrapper(layer)
         return layer
@@ -1176,7 +1177,8 @@ class GTransDecoder(TransformerDecoder):
         """
         if alignment_layer is None:
             alignment_layer = self.num_layers - 1
-        tgt_lang_id = self.get_lang_id(tgt_lang_id) - 1
+        if tgt_lang_id is not None:
+            tgt_lang_id = self.get_lang_id(tgt_lang_id) - 1
         # embed positions
         positions = (
             self.embed_positions(
@@ -2556,7 +2558,7 @@ def base_architecture(args):
     args.init_decoder_only = getattr(args, "init_decoder_only", False)
     args.max_positions = getattr(args, "max_positions", 512)
 
-    #
+    # GTrans
     args.encoder_group_layers = getattr(args, "encoder_group_layers", args.encoder_layers)
     args.decoder_group_layers = getattr(args, "decoder_group_layers", args.decoder_layers)
     args.encoder_group_type = getattr(args, "encoder_group_type", "sparse")

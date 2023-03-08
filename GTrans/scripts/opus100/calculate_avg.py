@@ -14,8 +14,7 @@ N = 94
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--log', '-log', type=str,
-                        default=r'/path/to/GTrans/model/BLEU/', help='input stream')
+    parser.add_argument('--log', '-log', type=str, default=r'/path/to/GTrans/model/BLEU/', help='input stream')
     args = parser.parse_args()
     return args
 

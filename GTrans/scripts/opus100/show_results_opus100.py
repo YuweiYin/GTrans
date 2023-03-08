@@ -1,12 +1,12 @@
 import argparse
-import os
-import io
-import sys
-import pickle
-import random
+# import os
+# import io
+# import sys
+# import pickle
+# import random
 
-HIGH_LANGS = 'ar,bg,bn,bs,ca,cs,da,de,el,es,et,eu,fa,fi,fr,he,hr,hu,id,is,it,ja,ko,lt,lv,mk,ms,mt,nl,no,pl,pt,ro,ru,si,sk,sl,sq,sr,sv,th,tr,uk,vi,zh'.split(
-    ',')
+HIGH_LANGS = 'ar,bg,bn,bs,ca,cs,da,de,el,es,et,eu,fa,fi,fr,he,hr,hu,id,is,it,ja,ko,lt,lv,mk,ms,mt,nl,no,pl,pt,ro,ru,' \
+             'si,sk,sl,sq,sr,sv,th,tr,uk,vi,zh'.split(',')
 MED_LANGS = 'af,as,az,br,cy,eo,ga,gl,gu,hi,ka,km,ku,mg,ml,nb,ne,nn,pa,rw,sh,ta,tg,tt,ur,uz,wa,xh'.split(',')
 LOW_LANGS = 'am,be,fy,gd,ha,ig,kk,kn,ky,li,mr,my,oc,or,ps,se,te,tk,ug,yi,zu'.split(',')
 N = 94
@@ -14,8 +14,7 @@ N = 94
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--log', '-log', type=str,
-                        default=r'/path/to/log/log.txt', help='input stream')
+    parser.add_argument('--log', '-log', type=str, default=r'./log/log.txt', help='input stream')
     args = parser.parse_args()
     return args
 

@@ -86,6 +86,9 @@ class CommonConfig(FairseqDataclass):
     no_progress_bar: bool = field(
         default=False, metadata={"help": "disable progress bar"}
     )
+    debug: bool = field(
+        default=False, metadata={"help": "disable progress bar"}
+    )
     log_interval: int = field(
         default=100,
         metadata={
