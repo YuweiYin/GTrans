@@ -326,11 +326,14 @@ GTrans w/o fusion | 34.22 | Diverge | Diverge
 
 ```bibtex
 @article{gtrans,
-  title   = {GTrans: Grouping and Fusing Transformer Layers for Neural Machine Translation},
-  author  = {Yang, Jian and Yin, Yuwei and Ma, Shuming and Huang, Haoyang and Zhang, Dongdong and Wei, Furu and Li, Zhoujun},
-  journal = {arXiv e-prints},
-  pages   = {arXiv--2207},
-  year    = {2022}
+  title   = {GTrans: Grouping and Fusing Transformer Layers for Neural Machine Translation}, 
+  author  = {Yang, Jian and Yin, Yuwei and Yang, Liqun and Ma, Shuming and Huang, Haoyang and Zhang, Dongdong and Wei, Furu and Li, Zhoujun},
+  journal = {IEEE/ACM Transactions on Audio, Speech, and Language Processing},
+  pages   = {1489-1498},
+  year    = {2023},
+  volume  = {31},
+  doi     = {10.1109/TASLP.2022.3221040},
+  url     = {https://ieeexplore.ieee.org/document/9944969},
 }
 ```
 
